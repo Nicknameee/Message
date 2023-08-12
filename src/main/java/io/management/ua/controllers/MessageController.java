@@ -18,11 +18,10 @@ import java.time.ZonedDateTime;
 public class MessageController {
     private final MessageService messageService;
 
-
     @GetMapping("/history")
-    @PreAuthorize(value = "hasAuthority(T(io.management.ua.utility.security.models.UserSecurityPermissions).managerReadPermission)")
-    public ResponseEntity<?> getMessageHistory(@RequestParam("start") @DateTimeFormat(pattern = "dd.MM.yyyy")ZonedDateTime start,
-                                               @RequestParam("end") @DateTimeFormat(pattern = "dd.MM.yyyy")ZonedDateTime end) {
+    @PreAuthorize("hasAuthority(T(io.management.ua.utility.security.models.UserSecurityPermissions).managerReadPermission)")
+    public ResponseEntity<?> getMessageHistory(@RequestParam("start") @DateTimeFormat(pattern = "dd.MM.yyyy") ZonedDateTime start,
+                                               @RequestParam("end") @DateTimeFormat(pattern = "dd.MM.yyyy") ZonedDateTime end) {
         return ResponseEntity.ok(messageService.getMessageHistory(start, end));
     }
 }

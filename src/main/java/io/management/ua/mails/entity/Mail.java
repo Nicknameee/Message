@@ -6,11 +6,13 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Data
 @RedisHash("mail")
 public class Mail implements Serializable {
     @Id
+    private UUID id = UUID.randomUUID();
     private String receiver;
     private String sender;
     private String content;

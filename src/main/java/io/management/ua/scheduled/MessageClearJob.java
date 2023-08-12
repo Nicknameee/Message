@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class MessageClearJob {
     private final MessageService messageService;
 
-    @Scheduled(fixedRate = 7, timeUnit = TimeUnit.DAYS)
+    @Scheduled(initialDelay = 7, fixedRate = 7, timeUnit = TimeUnit.DAYS)
     public void clearMessageCache() {
         messageService.clearMessageCache();
     }
