@@ -1,0 +1,37 @@
+server:
+  port: 9005
+
+spring:
+  application:
+    name: MESSAGE_SERVICE
+
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.management.ua.amqp.KafkaValueSerializer
+      client-id: id
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: id
+      value-deserializer: io.management.ua.amqp.KafkaValueDeserializer
+
+  redis:
+    host: localhost
+    port: 6379
+    database: 1
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: ${MAIL}
+    password: ${AUTH_CODE}
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          starttls.enable: true
+          starttls.required: true
+          auth: true
+          ssl.trust: smtp.gmail.com
