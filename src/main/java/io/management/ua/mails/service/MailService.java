@@ -28,6 +28,7 @@ public class MailService implements MessageService {
     public void processMessage(MessageModel messageModel) {
         Mail mail = mailMapper.messageModelToMail(messageModel);
         mail.setSendingDate(TimeUtil.getCurrentDateTime());
+
         javaMailSender.send(getMailMessage(mail));
 
         mailRepository.save(mail);
