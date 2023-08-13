@@ -1,4 +1,4 @@
-package io.management.ua.messages.service;
+package io.management.ua.messages;
 
 import io.management.ua.amqp.models.messages.MessageModel;
 

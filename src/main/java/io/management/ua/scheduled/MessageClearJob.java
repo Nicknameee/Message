@@ -1,6 +1,6 @@
 package io.management.ua.scheduled;
 
-import io.management.ua.messages.service.MessageService;
+import io.management.ua.messages.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

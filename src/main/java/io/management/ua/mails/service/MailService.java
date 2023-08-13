@@ -4,7 +4,7 @@ import io.management.ua.amqp.models.messages.MessageModel;
 import io.management.ua.mails.entity.Mail;
 import io.management.ua.mails.mappers.MailMapper;
 import io.management.ua.mails.repository.MailRepository;
-import io.management.ua.messages.service.MessageService;
+import io.management.ua.messages.MessageService;
 import io.management.ua.utility.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

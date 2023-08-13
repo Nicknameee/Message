@@ -1,6 +1,6 @@
 package io.management.ua.controllers;
 
-import io.management.ua.messages.service.MessageService;
+import io.management.ua.messages.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

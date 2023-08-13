@@ -4,7 +4,7 @@ import io.management.ua.amqp.KafkaValueParser;
 import io.management.ua.amqp.models.KafkaTopic;
 import io.management.ua.amqp.models.Message;
 import io.management.ua.amqp.models.messages.MessageModel;
-import io.management.ua.messages.service.MessageService;
+import io.management.ua.messages.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
