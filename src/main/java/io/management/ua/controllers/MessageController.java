@@ -19,7 +19,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @GetMapping("/history")
-    @PreAuthorize("hasAuthority(T(io.management.ua.utility.security.models.UserSecurityPermissions).managerReadPermission)")
+    @PreAuthorize("hasAuthority(T(io.management.ua.utility.models.UserSecurityPermissions).managerReadPermission)")
     public ResponseEntity<?> getMessageHistory(@RequestParam("start") @DateTimeFormat(pattern = "dd.MM.yyyy") ZonedDateTime start,
                                                @RequestParam("end") @DateTimeFormat(pattern = "dd.MM.yyyy") ZonedDateTime end) {
         return ResponseEntity.ok(messageService.getMessageHistory(start, end));

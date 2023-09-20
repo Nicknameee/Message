@@ -1,6 +1,6 @@
 package io.management.ua.mails.service;
 
-import io.management.ua.amqp.models.messages.MessageModel;
+import io.management.ua.amqp.messages.MessageModel;
 import io.management.ua.mails.entity.Mail;
 import io.management.ua.mails.mappers.MailMapper;
 import io.management.ua.mails.repository.MailRepository;
