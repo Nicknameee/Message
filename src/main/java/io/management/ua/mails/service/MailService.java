@@ -18,7 +18,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -81,7 +80,9 @@ public class MailService implements MessageService {
 
     @Override
     public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {
-        List<Mail> mails = StreamSupport.stream(mailRepository.findAll().spliterator(), false).filter(mail -> !mail.getSendingDate().isBefore(start) && !mail.getSendingDate().isAfter(end)).toList();
+        List<Mail> mails = StreamSupport.stream(mailRepository.findAll().spliterator(), false)
+                .filter(mail -> !mail.getSendingDate().isBefore(start) && !mail.getSendingDate().isAfter(end))
+                .toList();
 
         return mailMapper.mailsToMessages(mails);
     }
