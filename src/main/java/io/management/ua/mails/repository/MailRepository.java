@@ -7,5 +7,4 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface MailRepository extends KeyValueRepository<Mail, Long> {
-    List<Mail> getMailBySendingDateBetween(ZonedDateTime start, ZonedDateTime end);
 }

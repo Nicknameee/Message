@@ -1,5 +1,6 @@
 package io.management.ua.mails.entity;
 
+import io.management.ua.amqp.messages.MessageModel;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -18,5 +19,6 @@ public class Mail implements Serializable {
     private String content;
     private String subject;
     private ZonedDateTime sendingDate;
+    private MessageModel.MessageType messageType;
 }
 
