@@ -1,27 +1,25 @@
-package io.management.ua.mails.entity;
+package io.management.ua.telegram.entity;
 
 import io.management.ua.amqp.messages.MessageModel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Data
-@RedisHash("mail")
-public class Mail implements Serializable {
+@RedisHash("telegramSubscriber")
+public class TelegramMessage {
     @Id
     private UUID id = UUID.randomUUID();
     private String receiver;
     private String sender;
     private String content;
     private String subject;
-    @Indexed
     private ZonedDateTime sendingDate;
     private ZonedDateTime expiringDate;
     private MessageModel.MessageType messageType;
 }
-

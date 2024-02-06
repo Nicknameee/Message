@@ -3,7 +3,7 @@ package io.management.ua.mails.service;
 import io.management.ua.amqp.messages.MessageModel;
 import io.management.ua.exceptions.ActionRestrictedException;
 import io.management.ua.mails.entity.Mail;
-import io.management.ua.mails.mappers.MailMapper;
+import io.management.ua.mails.mappers.MessageMapper;
 import io.management.ua.mails.repository.MailRepository;
 import io.management.ua.messages.MessageService;
 import io.management.ua.utility.TimeUtil;
@@ -12,12 +12,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -25,13 +27,12 @@ import java.util.stream.StreamSupport;
 public class MailService implements MessageService {
     private final MailRepository mailRepository;
     private final JavaMailSender javaMailSender;
-    private final MailMapper mailMapper;
+    private final MessageMapper messageMapper;
     private final Environment environment;
 
     @Override
     public void processMessage(MessageModel messageModel) {
-        Mail mail = mailMapper.messageModelToMail(messageModel);
-        mail.setSendingDate(TimeUtil.getCurrentDateTime());
+        Mail mail = messageMapper.messageModelToMail(messageModel);
         mail.setSender(environment.getProperty("spring.mail.username"));
 
         switch (messageModel.getMessageType()) {
@@ -73,17 +74,16 @@ public class MailService implements MessageService {
         return mimeMessage;
     }
 
-    @Override
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     public void clearMessageCache() {
         mailRepository.deleteAll();
     }
 
-    @Override
     public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {
         List<Mail> mails = StreamSupport.stream(mailRepository.findAll().spliterator(), false)
                 .filter(mail -> !mail.getSendingDate().isBefore(start) && !mail.getSendingDate().isAfter(end))
                 .toList();
 
-        return mailMapper.mailsToMessages(mails);
+        return messageMapper.mailsToMessages(mails);
     }
 }
