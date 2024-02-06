@@ -23,5 +23,6 @@ public class Mail implements Serializable {
     private ZonedDateTime sendingDate;
     private ZonedDateTime expiringDate;
     private MessageModel.MessageType messageType;
+    private MessageModel.MessagePlatform messagePlatform;
 }
 

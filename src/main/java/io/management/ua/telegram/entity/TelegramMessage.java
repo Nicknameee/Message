@@ -22,4 +22,5 @@ public class TelegramMessage {
     private ZonedDateTime sendingDate;
     private ZonedDateTime expiringDate;
     private MessageModel.MessageType messageType;
+    private MessageModel.MessagePlatform messagePlatform;
 }
