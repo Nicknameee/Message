@@ -22,4 +22,8 @@ public class TelegramMessageService {
     public List<TelegramMessage> findAll() {
         return StreamSupport.stream(telegramMessageRepository.findAll().spliterator(), false).toList();
     }
+
+    public void deleteAll() {
+        telegramMessageRepository.deleteAll();
+    }
 }

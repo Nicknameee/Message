@@ -74,7 +74,7 @@ public class MailService implements MessageService {
         return mimeMessage;
     }
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
+    @Scheduled(fixedRate = 3, timeUnit = TimeUnit.DAYS)
     public void clearMessageCache() {
         mailRepository.deleteAll();
     }
