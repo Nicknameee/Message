@@ -66,6 +66,16 @@ public class TelegramService {
                         } else {
                             telegramSubscriberService.deleteByUsername(update.myChatMember().from().username());
                         }
+                    } else {
+                        if (update.message() != null) {
+                            telegramSubscriberService.save(new TelegramSubscriber(update.message().from().username(), update.message().chat().id()));
+                            switch (update.message().text()) {
+                                case "/start" -> {
+                                    SendMessage startMessage = new SendMessage(update.message().chat().id(), "Welcome, you started using CRM Assistant Bot, now you can proceed your actions gratefully!");
+                                    telegramBot.execute(startMessage);
+                                }
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {
