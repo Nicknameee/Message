@@ -17,6 +17,9 @@ public class TelegramSubscriberService {
         telegramSubscriberRepository.save(telegramSubscriber);
     }
 
+    public boolean existsByUsername(String username) {
+        return telegramSubscriberRepository.existsById(username);
+    }
     public TelegramSubscriber getByUsername(String username) {
         return telegramSubscriberRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("Telegram subscriber was not found"));
     }

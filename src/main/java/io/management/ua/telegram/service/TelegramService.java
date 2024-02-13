@@ -5,17 +5,21 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.ChatMember;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import io.management.ua.amqp.messages.MessageModel;
 import io.management.ua.mails.mappers.MessageMapper;
 import io.management.ua.telegram.entity.TelegramMessage;
 import io.management.ua.telegram.entity.TelegramSubscriber;
+import io.management.ua.utility.enums.WebSocketTopics;
+import io.management.ua.utility.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -30,8 +34,8 @@ public class TelegramService {
     private TelegramMessageService telegramMessageService;
     private MessageMapper messageMapper;
     private AbstractEnvironment abstractEnvironment;
-
     private final TelegramBot telegramBot;
+    private WebSocketService webSocketService;
 
     public TelegramService(AbstractEnvironment abstractEnvironment) {
         this.telegramBot = new TelegramBot(abstractEnvironment.getProperty("telegram.bot.token"));
@@ -55,7 +59,13 @@ public class TelegramService {
         this.abstractEnvironment = abstractEnvironment;
     }
 
+    @Autowired
+    public void setWebSocketService(WebSocketService webSocketService) {
+        this.webSocketService = webSocketService;
+    }
+
     @PostConstruct
+    @Transactional
     public void initListener() {
         telegramBot.setUpdatesListener(updates -> {
             try {
@@ -63,12 +73,17 @@ public class TelegramService {
                     if (update.myChatMember() != null) {
                         if (update.myChatMember().newChatMember().status() == ChatMember.Status.member) {
                             telegramSubscriberService.save(new TelegramSubscriber(update.myChatMember().from().username(), update.myChatMember().chat().id()));
+                            webSocketService.sendMessage(WebSocketTopics.TELEGRAM_SUBSCRIPTION.getTopic() + "/" + update.myChatMember().from().username(), true);
                         } else {
                             telegramSubscriberService.deleteByUsername(update.myChatMember().from().username());
+                            webSocketService.sendMessage(WebSocketTopics.TELEGRAM_SUBSCRIPTION.getTopic() + "/" +  update.myChatMember().from().username(), false);
                         }
                     } else {
                         if (update.message() != null) {
-                            telegramSubscriberService.save(new TelegramSubscriber(update.message().from().username(), update.message().chat().id()));
+                            if (!telegramSubscriberService.existsByUsername(update.message().from().username())) {
+                                telegramSubscriberService.save(new TelegramSubscriber(update.message().from().username(), update.message().chat().id()));
+                                webSocketService.sendMessage(WebSocketTopics.TELEGRAM_SUBSCRIPTION.getTopic() + "/" + update.message().from().username(), true);
+                            }
                             switch (update.message().text()) {
                                 case "/start" -> {
                                     SendMessage startMessage = new SendMessage(update.message().chat().id(), "Welcome, you started using CRM Assistant Bot, now you can proceed your actions gratefully!");
@@ -91,22 +106,28 @@ public class TelegramService {
     }
 
     public void processMessage(MessageModel messageModel) {
-        TelegramSubscriber telegramSubscriber = telegramSubscriberService.getByUsername(messageModel.getReceiver());
-        SendMessage sendMessage = new SendMessage(telegramSubscriber.getChatId(), messageModel.getContent());
-        telegramBot.execute(sendMessage, new Callback<SendMessage, SendResponse>() {
-            @Override
-            public void onResponse(SendMessage request, SendResponse response) {
-                TelegramMessage telegramMessage = messageMapper.messageModelToTelegramMessage(messageModel);
-                telegramMessage.setSender(abstractEnvironment.getProperty("telegram.bot.username"));
+        try {
+            TelegramSubscriber telegramSubscriber = telegramSubscriberService.getByUsername(messageModel.getReceiver());
 
-                telegramMessageService.save(telegramMessage);
-            }
+            SendMessage sendMessage = new SendMessage(telegramSubscriber.getChatId(), messageModel.getContent());
+            sendMessage = sendMessage.parseMode(ParseMode.MarkdownV2);
+            telegramBot.execute(sendMessage, new Callback<SendMessage, SendResponse>() {
+                @Override
+                public void onResponse(SendMessage request, SendResponse response) {
+                    TelegramMessage telegramMessage = messageMapper.messageModelToTelegramMessage(messageModel);
+                    telegramMessage.setSender(abstractEnvironment.getProperty("telegram.bot.username"));
 
-            @Override
-            public void onFailure(SendMessage request, IOException e) {
-                log.error(e.getMessage());
-            }
-        });
+                    telegramMessageService.save(telegramMessage);
+                }
+
+                @Override
+                public void onFailure(SendMessage request, IOException e) {
+                    log.error(e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {

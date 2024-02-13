@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Data
-@RedisHash("telegramSubscriber")
+@RedisHash("telegramMessage")
 public class TelegramMessage {
     @Id
     private UUID id = UUID.randomUUID();

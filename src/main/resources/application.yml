@@ -1,4 +1,4 @@
 telegram:
   bot:
-    username: crm_certification_bot
-    token: 6903561813:AAFNDxAFXq97_rnU-L0lgoxqC3haoM8F7_c
+    username: ${TELEGRAM_BOT_USERNAME:CRMManagementBot}
+    token: ${TELEGRAM_BOT_TOKEN}

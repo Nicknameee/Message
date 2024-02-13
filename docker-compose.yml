@@ -9,7 +9,7 @@ services:
     image: message:latest
     container_name: messages
     ports:
-      - "9003:9003"
+      - "9005:9005"
     environment:
       - CONFIG_SERVER_LOGIN=user
       - CONFIG_SERVER_PASSWORD=user
@@ -24,6 +24,7 @@ services:
       - REDIS_DATABASE=0
       - MAIL_ACCESS_TOKEN=nzzfyualtdfimbwj
       - MAIL_ADDRESS=utility.mailer.com@gmail.com
-      - TELEGRAM_BOT_TOKEN=6903561813:AAFNDxAFXq97_rnU-L0lgoxqC3haoM8F7_c
+      - TELEGRAM_BOT_USERNAME=CRMManagementBot
+      - TELEGRAM_BOT_TOKEN=6340890323:AAGFtYCCJwkA8Ghkc990Dyfc3KjRNXgnlZQ
     networks:
       - crm
