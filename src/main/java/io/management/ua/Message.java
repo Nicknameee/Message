@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class Message {
     public static void main(String[] args) {
-        log.debug("Message service started");
         SpringApplication.run(Message.class);
+        log.debug("Message service started");
     }
 }
