@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import io.management.ua.amqp.messages.MessageModel;
+import io.management.ua.annotations.DefaultNumberValue;
 import io.management.ua.mails.mappers.MessageMapper;
 import io.management.ua.telegram.entity.TelegramMessage;
 import io.management.ua.telegram.entity.TelegramSubscriber;
@@ -17,6 +18,7 @@ import io.management.ua.utility.service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,7 @@ public class TelegramService {
     public TelegramService(AbstractEnvironment abstractEnvironment) {
         this.telegramBot = new TelegramBot(abstractEnvironment.getProperty("telegram.bot.token"));
     }
+
     @Autowired
     public void setTelegramSubscriberService(TelegramSubscriberService telegramSubscriberService) {
         this.telegramSubscriberService = telegramSubscriberService;
@@ -130,8 +133,11 @@ public class TelegramService {
         }
     }
 
-    public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {
-        List<TelegramMessage> telegramMessages = telegramMessageService.findAll().stream()
+    public List<MessageModel> getMessageHistory(ZonedDateTime start,
+                                                ZonedDateTime end,
+                                                @DefaultNumberValue Integer page,
+                                                @DefaultNumberValue Integer sizeOfPage) {
+        List<TelegramMessage> telegramMessages = telegramMessageService.findAll(PageRequest.of(page, sizeOfPage)).stream()
                 .filter(mail -> !mail.getSendingDate().isBefore(start) && !mail.getSendingDate().isAfter(end))
                 .toList();
 

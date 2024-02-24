@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -23,14 +24,21 @@ public class MessageServiceProcessor {
         switch (messageModel.getMessagePlatform()) {
             case TELEGRAM -> telegramService.processMessage(messageModel);
             case EMAIL -> mailService.processMessage(messageModel);
-            default -> throw new ActionRestrictedException("Unsupported message platform");
+            default -> throw new ActionRestrictedException("Unsupported message platform \"{}\"", messageModel.getMessagePlatform());
         }
     }
 
-    public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {
-        List<MessageModel> messages = mailService.getMessageHistory(start, end);
-        messages.addAll(telegramService.getMessageHistory(start, end));
-
-        return messages;
+    public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end, MessageModel.MessagePlatform messagePlatform, Integer page, Integer size) {
+        switch (messagePlatform) {
+            case TELEGRAM -> {
+                return telegramService.getMessageHistory(start, end, page, size);
+            }
+            case EMAIL -> {
+                return mailService.getMessageHistory(start, end, page, size);
+            }
+            default -> {
+                return Stream.concat(telegramService.getMessageHistory(start, end, page, size).stream(), mailService.getMessageHistory(start, end, page, size).stream()).toList();
+            }
+        }
     }
 }

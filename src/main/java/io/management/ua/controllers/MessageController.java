@@ -1,5 +1,6 @@
 package io.management.ua.controllers;
 
+import io.management.ua.amqp.messages.MessageModel;
 import io.management.ua.messages.MessageServiceProcessor;
 import io.management.ua.response.Response;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,14 @@ public class MessageController {
     @GetMapping("/history")
     @PreAuthorize("!hasRole(T(io.management.ua.utility.models.UserSecurityRole).ROLE_CUSTOMER)")
     public Response<?> getMessageHistory(@RequestParam("start") @DateTimeFormat(pattern = "dd.MM.yyyy") Date start,
-                                         @RequestParam("end") @DateTimeFormat(pattern = "dd.MM.yyyy") Date end) {
-        return Response.ok(messageServiceProcessor.getMessageHistory(start.toInstant().atZone(ZoneId.of("UTC")), end.toInstant().atZone(ZoneId.of("UTC"))));
+                                         @RequestParam("end") @DateTimeFormat(pattern = "dd.MM.yyyy") Date end,
+                                         @RequestParam MessageModel.MessagePlatform messagePlatform,
+                                         @RequestParam(required = false) Integer page,
+                                         @RequestParam(required = false) Integer sizeOfPage) {
+        return Response.ok(messageServiceProcessor.getMessageHistory(start.toInstant().atZone(ZoneId.of("UTC")),
+                end.toInstant().atZone(ZoneId.of("UTC")),
+                messagePlatform,
+                page,
+                sizeOfPage));
     }
 }

@@ -4,6 +4,7 @@ import io.management.ua.telegram.entity.TelegramMessage;
 import io.management.ua.telegram.repository.TelegramMessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class TelegramMessageService {
         telegramMessageRepository.save(telegramMessage);
     }
 
-    public List<TelegramMessage> findAll() {
-        return StreamSupport.stream(telegramMessageRepository.findAll().spliterator(), false).toList();
+    public List<TelegramMessage> findAll(PageRequest pageRequest) {
+        return StreamSupport.stream(telegramMessageRepository.findAll(pageRequest).spliterator(), false).toList();
     }
 
     public void deleteAll() {

@@ -1,6 +1,7 @@
 package io.management.ua.mails.service;
 
 import io.management.ua.amqp.messages.MessageModel;
+import io.management.ua.annotations.DefaultNumberValue;
 import io.management.ua.exceptions.ActionRestrictedException;
 import io.management.ua.mails.entity.Mail;
 import io.management.ua.mails.mappers.MessageMapper;
@@ -9,6 +10,7 @@ import io.management.ua.messages.MessageService;
 import io.management.ua.utility.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -79,8 +81,12 @@ public class MailService implements MessageService {
         mailRepository.deleteAll();
     }
 
-    public List<MessageModel> getMessageHistory(ZonedDateTime start, ZonedDateTime end) {
-        List<Mail> mails = StreamSupport.stream(mailRepository.findAll().spliterator(), false)
+    public List<MessageModel> getMessageHistory(ZonedDateTime start,
+                                                ZonedDateTime end,
+                                                @DefaultNumberValue Integer page,
+                                                @DefaultNumberValue Integer sizeOfPage) {
+        List<Mail> mails = StreamSupport.stream(mailRepository.findAll(PageRequest.of(page,
+                        sizeOfPage)).spliterator(), false)
                 .filter(mail -> !mail.getSendingDate().isBefore(start) && !mail.getSendingDate().isAfter(end))
                 .toList();
 

@@ -6,5 +6,4 @@ import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import java.util.UUID;
 
 public interface TelegramMessageRepository extends KeyValueRepository<TelegramMessage, UUID> {
-
 }
