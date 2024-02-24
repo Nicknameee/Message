@@ -1,3 +1,7 @@
+spring:
+  profiles:
+    active: default, native, dev, elk
+
 telegram:
   bot:
     username: ${TELEGRAM_BOT_USERNAME:CRMManagementBot}
