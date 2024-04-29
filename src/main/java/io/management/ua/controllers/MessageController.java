@@ -3,6 +3,7 @@ package io.management.ua.controllers;
 import io.management.ua.amqp.messages.MessageModel;
 import io.management.ua.messages.MessageServiceProcessor;
 import io.management.ua.response.Response;
+import io.management.ua.telegram.service.TelegramSubscriberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class MessageController {
     private final MessageServiceProcessor messageServiceProcessor;
+    private final TelegramSubscriberService telegramSubscriberService;
 
     @GetMapping("/history")
     @PreAuthorize("!hasRole(T(io.management.ua.utility.models.UserSecurityRole).ROLE_CUSTOMER)")
@@ -32,5 +34,10 @@ public class MessageController {
                 messagePlatform,
                 page,
                 sizeOfPage));
+    }
+
+    @GetMapping("/telegram/exists/allowed")
+    public Response<?> customerTelegramRegistered(@RequestParam("username") String telegramUsername) {
+        return Response.ok(telegramSubscriberService.existsByUsername(telegramUsername));
     }
 }

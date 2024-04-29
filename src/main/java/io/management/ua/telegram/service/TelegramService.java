@@ -114,20 +114,23 @@ public class TelegramService {
 
             SendMessage sendMessage = new SendMessage(telegramSubscriber.getChatId(), messageModel.getContent());
             sendMessage = sendMessage.parseMode(ParseMode.MarkdownV2);
-            telegramBot.execute(sendMessage, new Callback<SendMessage, SendResponse>() {
-                @Override
-                public void onResponse(SendMessage request, SendResponse response) {
-                    TelegramMessage telegramMessage = messageMapper.messageModelToTelegramMessage(messageModel);
-                    telegramMessage.setSender(abstractEnvironment.getProperty("telegram.bot.username"));
 
-                    telegramMessageService.save(telegramMessage);
-                }
+            if (telegramSubscriberService.existsByUsername(messageModel.getReceiver())) {
+                telegramBot.execute(sendMessage, new Callback<SendMessage, SendResponse>() {
+                    @Override
+                    public void onResponse(SendMessage request, SendResponse response) {
+                        TelegramMessage telegramMessage = messageMapper.messageModelToTelegramMessage(messageModel);
+                        telegramMessage.setSender(abstractEnvironment.getProperty("telegram.bot.username"));
 
-                @Override
-                public void onFailure(SendMessage request, IOException e) {
-                    log.error(e.getMessage());
-                }
-            });
+                        telegramMessageService.save(telegramMessage);
+                    }
+
+                    @Override
+                    public void onFailure(SendMessage request, IOException e) {
+                        log.error(e.getMessage());
+                    }
+                });
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         }
