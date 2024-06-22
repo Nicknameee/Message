@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: default, native, dev, elk
+    active: ${SPRING_PROFILES_ACTIVE:default, native, dev, elk}
 
 telegram:
   bot:
